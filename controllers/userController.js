@@ -14,13 +14,6 @@ exports.postSignUp = async (req, res, next) => {
         })
     }
     try {
-        // Checking if the entered email is already exits in the database or not
-        const user = await User.findOne({ email })
-        if (user) {
-            return res.status(409).json({
-                message: "This email already exists. Please try to login or enter new email"
-            })
-        }
         // Securing the password
         const hashPassword = await bcrypt.hash(password, 10)
         if (!hashPassword) {
@@ -41,6 +34,19 @@ exports.postSignUp = async (req, res, next) => {
     }
     catch (error) {
         next(error);
+    }
+
+}
+
+// ----------------Login------------------------
+exports.postLogin = (req, res, next) => {
+    const { email, password } = req.body;
+    const errors = validationResult(req);
+    // If there is error on validation
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            message: errors.array()[0].msg
+        })
     }
 
 }
