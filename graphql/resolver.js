@@ -102,11 +102,9 @@ module.exports = {
 
     deleteTask: async ({ deleteTaskInfo }, req) => {
         const { taskId } = deleteTaskInfo;
-        console.log(taskId);
         try {
             auth(req);
             const task = await Task.findById(taskId);
-            console.log(task);
             if (!task) {
                 errorController.NOT_FOUND("This task does not exists");
             }
@@ -117,6 +115,30 @@ module.exports = {
             return "Successfully delete the task from the database";
         }
         catch (error) {
+            throw error;
+        }
+    },
+
+    eidtTask: async ({ editTaskInfo }, req) => {
+        const { taskId, taskValue, start, end } = editTaskInfo;
+        try{
+            auth(req);
+            const task = await Task.findById(taskId);
+            if(!task){
+                errorController.NOT_FOUND("This task does not exist");
+            }
+            if(task.userId.toString() !== req.userId.toString()){
+                errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot edit this task");
+            }
+            await Task.findByIdAndUpdate(taskId, {
+                task: taskValue,
+                start,
+                end
+            });
+
+            return "Successfully updated the task."
+        }
+        catch(error){
             throw error;
         }
     }
