@@ -48,10 +48,15 @@ type outputTaskInfo {
     userId: String!
 }
 
+input inputDeleteTaskInfo {
+    taskId: ID!
+}
+
 type RootMutation {
     SignUp(userData: inputUserData): outputUserData!
     LogIn(userLoginData: inputUserLoginData): outputUserLoginData!
     createTask(taskInfo: inputTaskInfo): outputTaskInfo!
+    deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
 }
 
 schema {

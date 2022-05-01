@@ -8,5 +8,10 @@ module.exports = {
         const error = new Error(message);
         error.statusCode = 401;
         throw error;
+    },
+    NOT_FOUND: (message) => {
+        const error = new Error(message);
+        error.statusCode = 404;
+        throw error;
     }
 }

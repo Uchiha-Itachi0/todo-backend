@@ -98,5 +98,26 @@ module.exports = {
         catch (error) {
             throw error;
         }
+    },
+
+    deleteTask: async ({ deleteTaskInfo }, req) => {
+        const { taskId } = deleteTaskInfo;
+        console.log(taskId);
+        try {
+            auth(req);
+            const task = await Task.findById(taskId);
+            console.log(task);
+            if (!task) {
+                errorController.NOT_FOUND("This task does not exists");
+            }
+            if (task.userId.toString() !== req.userId.toString()) {
+                errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot delete this task");
+            }
+            await Task.findByIdAndDelete(taskId);
+            return "Successfully delete the task from the database";
+        }
+        catch (error) {
+            throw error;
+        }
     }
 }
