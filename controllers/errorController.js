@@ -1,9 +1,12 @@
-const errorHandler = (error, req, res, next) => {
-    const status = error.statusCode || 500;
-    const message = error.message || "Something went wrong. Please try again later"
-    res.status(status).json({
-        message
-    });
+module.exports = {
+    VALIDATION_FAILS: (message) => {
+        const error = new Error(message);
+        error.statusCode = 422;
+        throw error
+    },
+    AUTHORIZATION_ERROR: (message) => {
+        const error = new Error(message);
+        error.statusCode = 401;
+        throw error;
+    }
 }
-
-module.exports = errorHandler;

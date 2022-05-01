@@ -1,15 +1,29 @@
 require("dotenv").config();
 const express = require('express');
 const connectToDatabase = require('./database/database');
-const userRoute = require('./routes/userRoute');
-const errorHandler = require("./controllers/errorController");
+const { graphqlHTTP } = require('express-graphql');
+const Schema = require('./graphql/graphqlSchema');
+const rootResolver = require('./graphql/resolver');
+const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {res.send("<h1>Radhe Radhe</h1>")})
-app.use(userRoute);
+app.use("/graphql", graphqlHTTP({
+    schema: Schema,
+    rootValue: rootResolver,
+    graphiql: true,
+    customFormatErrorFn(error) {
+        if(!error.originalError){
+            return error;
+        }
+        const status = error.originalError.statusCode || 500;
+        const message = error.message || "Something went wrong. Please try again later";
+        return { message, status }
+    }
+}))
 app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
 
 connectToDatabase
