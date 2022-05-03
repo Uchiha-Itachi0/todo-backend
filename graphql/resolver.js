@@ -142,5 +142,36 @@ module.exports = {
         catch(error){
             throw error;
         }
+    },
+
+    addCatogary: async ({ addCatogaryInfo }, req) => {
+        const { userId, catogary } = addCatogaryInfo;
+        try{
+            auth(req);
+            const upperCaseCatogary = validation.CATOGARY(catogary);
+            if(userId !== req.userId){
+                errorController.AUTHORIZATION_ERROR("Cannot add the catogary in the user");
+            }
+            const user = await User.findById(userId);
+            if(!user){
+                errorController.NOT_FOUND("Cannot find this user");
+            }
+
+            user.catogaries.forEach(element => {
+                if(element.trim() === upperCaseCatogary.trim()){
+                    errorController.VALIDATION_FAILS("This catogary is already created please create another one or add task to the existing catogary");
+                }
+            })
+    
+            const updatedUser = await User.findOneAndUpdate(userId, {
+                $push: {catogaries: upperCaseCatogary}
+            }, {new: true});
+    
+            return {...updatedUser._doc, _id: updatedUser._id.toString()}
+        }
+        catch(error){
+            throw error;
+        }
+
     }
 }

@@ -67,12 +67,23 @@ type outputEditTaskInfo {
     end: String!
 }
 
+input inputAddCatogaryInfo {
+    userId: ID!
+    catogary: String!
+}
+
+type outputAddCatogaryInfo {
+    _id: ID!
+    catogaries: [String!]
+}
+
 type RootMutation {
     SignUp(userData: inputUserData): outputUserData!
     LogIn(userLoginData: inputUserLoginData): outputUserLoginData!
     createTask(taskInfo: inputTaskInfo): outputTaskInfo!
     deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
     eidtTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
+    addCatogary(addCatogaryInfo: inputAddCatogaryInfo): outputAddCatogaryInfo!
 
 }
 
