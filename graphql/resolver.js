@@ -29,6 +29,7 @@ module.exports = {
     SignUp: async ({ userData }) => {
         const { name, email, password, confirmPassword } = userData;
         try {
+            validation.MIN_LENGTH(name);
             validation.EMAIL(email);
             validation.PASSWORD_LENGTH(password);
             validation.PASSWORD_MATCH(password, confirmPassword);
@@ -46,8 +47,6 @@ module.exports = {
                 name,
                 email,
                 password: hashPassword,
-                confirmPassword: hashPassword
-
             })
             return { ...createdUser._doc, _id: createdUser._id.toString() }
 

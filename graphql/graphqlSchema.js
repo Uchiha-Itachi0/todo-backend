@@ -16,6 +16,7 @@ type outputUserData {
     _id: ID!
     name: String!
     email: String!
+    catogaries: [String!]
 }
 
 input inputUserData {

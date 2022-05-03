@@ -26,5 +26,8 @@ module.exports = {
         if(!validator.isLength(value, {min: 1})){
             errorController.VALIDATION_FAILS("Input field cannot be empty");
         }
+    },
+    CATOGARY: (value) => {
+        return value.toUpperCase();
     }
 }

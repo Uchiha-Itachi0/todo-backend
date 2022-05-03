@@ -13,9 +13,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Please enter your password"]
     },
-    confirmPassword: {
-        type: String,
-        required: [true, "Password should match"]
+    catogaries: {
+        type: Array,
+        default: ["WORK"]
     }
 });
 
