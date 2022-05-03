@@ -41,6 +41,7 @@ input inputTaskInfo {
     task: String!
     start: String!
     end: String!
+    catagory: String!
 }
 
 type outputTaskInfo {
@@ -59,12 +60,19 @@ input inputEditTaskInfo {
     end: String!
 }
 
+type outputEditTaskInfo {
+    task: String!
+    start: String!
+    end: String!
+}
+
 type RootMutation {
     SignUp(userData: inputUserData): outputUserData!
     LogIn(userLoginData: inputUserLoginData): outputUserLoginData!
     createTask(taskInfo: inputTaskInfo): outputTaskInfo!
-    deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!,
-    eidtTask(editTaskInfo: inputEditTaskInfo): String!
+    deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
+    eidtTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
+
 }
 
 schema {

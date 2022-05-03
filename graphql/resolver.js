@@ -5,6 +5,7 @@ const errorController = require("../controllers/errorController");
 const validation = require("../validation/validation");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
+const { update } = require("../models/user");
 module.exports = {
 
     me: async (_, req) => {
@@ -79,7 +80,7 @@ module.exports = {
     },
 
     createTask: async ({ taskInfo }, req) => {
-        const { task, start, end } = taskInfo;
+        const { task, start, end, catagory } = taskInfo;
         try {
             validation.MIN_LENGTH(task);
             validation.IS_INTEGER(start);
@@ -90,6 +91,7 @@ module.exports = {
                 task,
                 start,
                 end,
+                catagory,
                 userId: req.userId
             });
 
@@ -130,13 +132,13 @@ module.exports = {
             if(task.userId.toString() !== req.userId.toString()){
                 errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot edit this task");
             }
-            await Task.findByIdAndUpdate(taskId, {
+            const updatedTask = await Task.findByIdAndUpdate(taskId, {
                 task: taskValue,
                 start,
                 end
-            });
+            }, { new: true});    // New field tell the mongoose to return the updated task.
 
-            return "Successfully updated the task."
+            return {...updatedTask._doc, _id: updatedTask._id.toString()}
         }
         catch(error){
             throw error;

@@ -17,6 +17,10 @@ const taskSchema = mongoose.Schema({
     end: {
         type: Number,
         required: [true, "Enter when the task will end"]
+    },
+    catagory: {
+        type: String,
+        required: [true, "Enter to which catagory this task belongs to"]
     }
 });
 
