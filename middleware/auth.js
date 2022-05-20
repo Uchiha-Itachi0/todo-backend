@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { AUTHORIZATION_ERROR } = require("../controllers/errorController");
 module.exports = (req) => {
+    let token = req.get("Authorization")
     try{
-        if(!req.headers.token){
+        if(!token){
             AUTHORIZATION_ERROR("Authorization Failed");
         }
-        const decodedData = jwt.verify(req.headers.token, process.env.MY_SECRET);
+        const decodedData = jwt.verify(token, process.env.MY_SECRET);
         if(!decodedData){
             AUTHORIZATION_ERROR("Authorization Failed. Invalid token");
         }

@@ -3,20 +3,15 @@ const { buildSchema } = require('graphql');
 module.exports = buildSchema(`
 
 type RootQuery {
-    me: userInfo!
-}
-
-type userInfo {
-    _id: ID!
-    name: String!
-    email: String!
+    me: outputUserData!
 }
 
 type outputUserData {
     _id: ID!
     name: String!
     email: String!
-    catogaries: [String!]
+    catogaries: [String!],
+    message: String!
 }
 
 input inputUserData {

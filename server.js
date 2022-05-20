@@ -2,13 +2,14 @@ require("dotenv").config();
 const express = require('express');
 const connectToDatabase = require('./database/database');
 const { graphqlHTTP } = require('express-graphql');
+const cors = require('cors');
 const Schema = require('./graphql/graphqlSchema');
 const rootResolver = require('./graphql/resolver');
 const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 app.use(express.json());
-
+app.use(cors());
 app.use("/graphql", graphqlHTTP({
     schema: Schema,
     rootValue: rootResolver,

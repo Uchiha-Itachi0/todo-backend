@@ -9,20 +9,14 @@ const { update } = require("../models/user");
 module.exports = {
 
     me: async (_, req) => {
+        auth(req);
         try {
-            if (!req.userId) {
-                const error = new Error("Authorization fails");
-                error.statusCode = 404;
-                throw error;
-            }
-
-            const user = await User.findOne({ where: { _id: req.userId } })
-            return { ...user._doc, _id: user._id.toString() }
+            const user = await User.findById(req.userId)
+            return { ...user._doc, _id: user._id.toString(), message: "user data"}
         }
         catch (error) {
             throw error
         }
-
 
     },
 
@@ -48,7 +42,7 @@ module.exports = {
                 email,
                 password: hashPassword,
             })
-            return { ...createdUser._doc, _id: createdUser._id.toString() }
+            return { ...createdUser._doc, _id: createdUser._id.toString(), message: "Successfully signed up. Please Login to Continue" }
 
         }
         catch (error) {
