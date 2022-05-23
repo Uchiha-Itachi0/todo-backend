@@ -12,7 +12,7 @@ module.exports = {
         auth(req);
         try {
             const user = await User.findById(req.userId)
-            return { ...user._doc, _id: user._id.toString(), message: "user data"}
+            return { ...user._doc, _id: user._id.toString(), message: "user data" }
         }
         catch (error) {
             throw error
@@ -73,22 +73,32 @@ module.exports = {
     },
 
     createTask: async ({ taskInfo }, req) => {
-        const { task, start, end, catagory } = taskInfo;
+        const { task, catagory } = taskInfo;
         try {
             validation.MIN_LENGTH(task);
-            validation.IS_INTEGER(start);
-            validation.IS_INTEGER(end);
-
             auth(req);
             const user = await Task.create({
                 task,
-                start,
-                end,
                 catagory,
                 userId: req.userId
             });
 
             return { ...user._doc, _id: user._id.toString(), userId: user.userId }
+        }
+        catch (error) {
+            throw error;
+        }
+    },
+
+    getTask: async ({ getTaskInfo }, req) => {
+        const { userId, catogary } = getTaskInfo;
+        try {
+            auth(req);
+            const task = await Task.find({ userId: userId, catagory: catogary });
+            const taskData = task.map(value => {
+                return {id: value._id, task: value.task}
+            })
+            return taskData
         }
         catch (error) {
             throw error;
@@ -116,56 +126,75 @@ module.exports = {
 
     eidtTask: async ({ editTaskInfo }, req) => {
         const { taskId, taskValue, start, end } = editTaskInfo;
-        try{
+        try {
             auth(req);
             const task = await Task.findById(taskId);
-            if(!task){
+            if (!task) {
                 errorController.NOT_FOUND("This task does not exist");
             }
-            if(task.userId.toString() !== req.userId.toString()){
+            if (task.userId.toString() !== req.userId.toString()) {
                 errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot edit this task");
             }
             const updatedTask = await Task.findByIdAndUpdate(taskId, {
                 task: taskValue,
                 start,
                 end
-            }, { new: true});    // New field tell the mongoose to return the updated task.
+            }, { new: true });    // New field tell the mongoose to return the updated task.
 
-            return {...updatedTask._doc, _id: updatedTask._id.toString()}
+            return { ...updatedTask._doc, _id: updatedTask._id.toString() }
         }
-        catch(error){
+        catch (error) {
             throw error;
         }
     },
 
     addCatogary: async ({ addCatogaryInfo }, req) => {
         const { userId, catogary } = addCatogaryInfo;
-        try{
+        try {
             auth(req);
             const upperCaseCatogary = validation.CATOGARY(catogary);
-            if(userId !== req.userId){
+            if (userId !== req.userId) {
                 errorController.AUTHORIZATION_ERROR("Cannot add the catogary in the user");
             }
             const user = await User.findById(userId);
-            if(!user){
+            if (!user) {
                 errorController.NOT_FOUND("Cannot find this user");
             }
 
             user.catogaries.forEach(element => {
-                if(element.trim() === upperCaseCatogary.trim()){
+                if (element.trim() === upperCaseCatogary.trim()) {
                     errorController.VALIDATION_FAILS("This catogary is already created please create another one or add task to the existing catogary");
                 }
             })
-    
+
             const updatedUser = await User.findOneAndUpdate(userId, {
-                $push: {catogaries: upperCaseCatogary}
-            }, {new: true});
-    
-            return {...updatedUser._doc, _id: updatedUser._id.toString()}
+                $push: { catogaries: upperCaseCatogary }
+            }, { new: true });
+
+            return { ...updatedUser._doc, _id: updatedUser._id.toString() }
         }
-        catch(error){
+        catch (error) {
             throw error;
         }
 
+    },
+    deleteCatogary: async ({ deleteCatogaryInfo }, req) => {
+        const { projectId, projectName } = deleteCatogaryInfo;
+        try {
+            auth(req);
+            const user = await User.findById(projectId);
+            if (!user) {
+                errorController.NOT_FOUND("This project does not exists");
+            }
+            if (user._id.toString() !== req.userId.toString()) {
+                errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot delete this task");
+            }
+            const updatedData = await User.findOneAndUpdate(projectId, { $pull: { catogaries: projectName } }, { new: true });
+            await Task.deleteMany({catagory: projectName});
+            return { catogaries: updatedData.catogaries, message: `Successfully delete ${projectName} from the database` }
+        }
+        catch (error) {
+            throw error;
+        }
     }
 }

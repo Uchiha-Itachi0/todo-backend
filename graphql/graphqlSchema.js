@@ -25,7 +25,8 @@ type outputUserLoginData {
     _id: ID!
     name: String!
     email: String!
-    token: String!
+    token: String!,
+    catogaries: [String!]
 }
 
 input inputUserLoginData {
@@ -35,8 +36,6 @@ input inputUserLoginData {
 
 input inputTaskInfo {
     task: String!
-    start: String!
-    end: String!
     catagory: String!
 }
 
@@ -44,6 +43,17 @@ type outputTaskInfo {
     _id: ID!
     userId: String!
 }
+
+input inputGetTaskInfo {
+    userId: ID!
+    catogary: String!
+}
+
+type outputGetTaskInfo {
+    id: ID!
+    task: String!
+}
+
 
 input inputDeleteTaskInfo {
     taskId: ID!
@@ -72,14 +82,24 @@ type outputAddCatogaryInfo {
     catogaries: [String!]
 }
 
+input inputDeleteCatogaryInfo {
+    projectId: ID!
+    projectName: String!
+}
+type outputDeleteProject {
+    catogaries: [String!]
+    message: String!
+}
+
 type RootMutation {
     SignUp(userData: inputUserData): outputUserData!
     LogIn(userLoginData: inputUserLoginData): outputUserLoginData!
     createTask(taskInfo: inputTaskInfo): outputTaskInfo!
+    getTask(getTaskInfo: inputGetTaskInfo): [outputGetTaskInfo!]
     deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
     eidtTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
     addCatogary(addCatogaryInfo: inputAddCatogaryInfo): outputAddCatogaryInfo!
-
+    deleteCatogary(deleteCatogaryInfo: inputDeleteCatogaryInfo): outputDeleteProject!
 }
 
 schema {

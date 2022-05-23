@@ -12,11 +12,11 @@ const taskSchema = mongoose.Schema({
     },
     start: {
         type: Number,
-        required: [true, "Enter when the task will start"]
+        // required: [true, "Enter when the task will start"]
     },
     end: {
         type: Number,
-        required: [true, "Enter when the task will end"]
+        // required: [true, "Enter when the task will end"]
     },
     catagory: {
         type: String,
