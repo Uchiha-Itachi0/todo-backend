@@ -21,6 +21,10 @@ const taskSchema = mongoose.Schema({
     catagory: {
         type: String,
         required: [true, "Enter to which catagory this task belongs to"]
+    },
+    completed: {
+        type: Boolean,
+        default: false
     }
 });
 

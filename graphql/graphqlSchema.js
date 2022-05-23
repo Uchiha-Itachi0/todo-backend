@@ -48,6 +48,7 @@ type outputTaskInfo {
 input inputGetTaskInfo {
     userId: ID!
     catogary: String!
+    showCompletedTask: Boolean!
 }
 
 type outputGetTaskInfo {
@@ -67,6 +68,10 @@ input inputEditTaskInfo {
 
 type outputEditTaskInfo {
     task: String!
+}
+input inputCompleteTaskInfo {
+    taskId: ID!
+    state: Boolean!
 }
 
 input inputAddCatogaryInfo {
@@ -95,6 +100,7 @@ type RootMutation {
     getTask(getTaskInfo: inputGetTaskInfo): [outputGetTaskInfo!]
     deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
     editTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
+    completeTask(completeTaskInfo: inputCompleteTaskInfo): String!
     addCatogary(addCatogaryInfo: inputAddCatogaryInfo): outputAddCatogaryInfo!
     deleteCatogary(deleteCatogaryInfo: inputDeleteCatogaryInfo): outputDeleteProject!
 }

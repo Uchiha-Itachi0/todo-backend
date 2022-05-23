@@ -91,12 +91,18 @@ module.exports = {
     },
 
     getTask: async ({ getTaskInfo }, req) => {
-        const { userId, catogary } = getTaskInfo;
+        const { userId, catogary, showCompletedTask } = getTaskInfo;
         try {
             auth(req);
-            const task = await Task.find({ userId: userId, catagory: catogary });
+            let task;
+            if (showCompletedTask) {
+                task = await Task.find({ userId: userId, completed: true });
+            }
+            else{
+                task = await Task.find({ userId: userId, catagory: catogary, completed: false });
+            }
             const taskData = task.map(value => {
-                return {id: value._id, task: value.task}
+                return { id: value._id, task: value.task }
             })
             return taskData
         }
@@ -145,11 +151,27 @@ module.exports = {
             throw error;
         }
     },
+    completeTask: async ({ completeTaskInfo }, req) => {
+        const { taskId, state } = completeTaskInfo;
+        auth(req);
+        const task = await Task.findById(taskId);
+        if (!task) {
+            errorController.NOT_FOUND("This task does not exist");
+        }
+        if (task.userId.toString() !== req.userId.toString()) {
+            errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot edit this task");
+        }
+        await Task.findByIdAndUpdate(taskId, {
+            completed: state
+        }, { new: true });
+        return state ? "Congratulations🎉😁" : "Successfully Restored"
 
+    },
     addCatogary: async ({ addCatogaryInfo }, req) => {
         const { userId, catogary } = addCatogaryInfo;
         try {
             auth(req);
+            validation.MIN_LENGTH(catogary);
             const upperCaseCatogary = validation.CATOGARY(catogary);
             if (userId !== req.userId) {
                 errorController.AUTHORIZATION_ERROR("Cannot add the catogary in the user");
@@ -188,7 +210,7 @@ module.exports = {
                 errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot delete this task");
             }
             const updatedData = await User.findOneAndUpdate(projectId, { $pull: { catogaries: projectName } }, { new: true });
-            await Task.deleteMany({catagory: projectName});
+            await Task.deleteMany({ catagory: projectName });
             return { catogaries: updatedData.catogaries, message: `Successfully delete ${projectName} from the database` }
         }
         catch (error) {
