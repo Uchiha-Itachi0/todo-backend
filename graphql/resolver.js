@@ -124,8 +124,8 @@ module.exports = {
         }
     },
 
-    eidtTask: async ({ editTaskInfo }, req) => {
-        const { taskId, taskValue, start, end } = editTaskInfo;
+    editTask: async ({ editTaskInfo }, req) => {
+        const { taskId, taskValue } = editTaskInfo;
         try {
             auth(req);
             const task = await Task.findById(taskId);
@@ -136,9 +136,7 @@ module.exports = {
                 errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot edit this task");
             }
             const updatedTask = await Task.findByIdAndUpdate(taskId, {
-                task: taskValue,
-                start,
-                end
+                task: taskValue
             }, { new: true });    // New field tell the mongoose to return the updated task.
 
             return { ...updatedTask._doc, _id: updatedTask._id.toString() }

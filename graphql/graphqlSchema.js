@@ -42,6 +42,7 @@ input inputTaskInfo {
 type outputTaskInfo {
     _id: ID!
     userId: String!
+    task: String!
 }
 
 input inputGetTaskInfo {
@@ -62,14 +63,10 @@ input inputDeleteTaskInfo {
 input inputEditTaskInfo {
     taskId: ID!
     taskValue: String!
-    start: String!
-    end: String!
 }
 
 type outputEditTaskInfo {
     task: String!
-    start: String!
-    end: String!
 }
 
 input inputAddCatogaryInfo {
@@ -97,7 +94,7 @@ type RootMutation {
     createTask(taskInfo: inputTaskInfo): outputTaskInfo!
     getTask(getTaskInfo: inputGetTaskInfo): [outputGetTaskInfo!]
     deleteTask(deleteTaskInfo: inputDeleteTaskInfo): String!
-    eidtTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
+    editTask(editTaskInfo: inputEditTaskInfo): outputEditTaskInfo!
     addCatogary(addCatogaryInfo: inputAddCatogaryInfo): outputAddCatogaryInfo!
     deleteCatogary(deleteCatogaryInfo: inputDeleteCatogaryInfo): outputDeleteProject!
 }
