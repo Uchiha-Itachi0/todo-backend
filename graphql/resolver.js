@@ -186,12 +186,10 @@ module.exports = {
                     errorController.VALIDATION_FAILS("This catogary is already created please create another one or add task to the existing catogary");
                 }
             })
+            user.catogaries.push(upperCaseCatogary);
+            user.save();
 
-            const updatedUser = await User.findOneAndUpdate(userId, {
-                $push: { catogaries: upperCaseCatogary }
-            }, { new: true });
-
-            return { ...updatedUser._doc, _id: updatedUser._id.toString() }
+            return { ...user._doc, _id: user._id.toString() }
         }
         catch (error) {
             throw error;
@@ -209,9 +207,10 @@ module.exports = {
             if (user._id.toString() !== req.userId.toString()) {
                 errorController.AUTHORIZATION_ERROR("Authorization fails. You cannot delete this task");
             }
-            const updatedData = await User.findOneAndUpdate(projectId, { $pull: { catogaries: projectName } }, { new: true });
-            await Task.deleteMany({ catagory: projectName });
-            return { catogaries: updatedData.catogaries, message: `Successfully delete ${projectName} from the database` }
+            user.catogaries.splice(user.catogaries.indexOf(projectName), 1);
+            user.save();
+            await Task.deleteMany({ catagory: projectName, userId: projectId});
+            return { catogaries: user.catogaries, message: `Successfully delete ${projectName} from the database` }
         }
         catch (error) {
             throw error;
