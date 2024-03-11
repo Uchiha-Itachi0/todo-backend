@@ -6,6 +6,15 @@ const validation = require("../validation/validation");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const { update } = require("../models/user");
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'hotmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 module.exports = {
 
     me: async (_, req) => {
@@ -66,6 +75,40 @@ module.exports = {
 
             const accessToken = jwt.sign({ userId: user._id }, process.env.MY_SECRET, { expiresIn: "1d" });
             return { ...user._doc, _id: user._id.toString(), token: accessToken }
+        }
+        catch (error) {
+            throw error
+        }
+    },
+
+    sendOTP: async ({ email }) => {
+        try {
+            validation.EMAIL(email);
+            const user = await User.findOne({ email });
+            if (!user) {
+                errorController.VALIDATION_FAILS("This email address does not exists in our database. Please try to sign in or use another email address.");
+            }
+            const otp = Math.floor(100000 + Math.random() * 900000);
+            const hashOTP = await bcrypt.hash(otp.toString(), 10);
+            if (!hashOTP) {
+                const error = new Error("Something went wrong. Please try again.");
+                error.statusCode = 400
+                throw error
+            }
+            await transporter.sendMail({
+                to: email,
+                from: process.env.EMAIL,
+                subject: 'OTP To login',
+                html: `
+                <h1>Hey, Welcome to The JAR</h1>
+                <p>Here's Your OTP ${otp}</p>`
+            }).catch(error => console.log(error))
+            const otpSent = await User.updateOne({ email }, { hashOTP });
+
+            if (!otpSent) {
+                errorController.VALIDATION_FAILS("Something went wrong. Please try again.")
+            }
+            return { message: "OTP sent successfully" }
         }
         catch (error) {
             throw error

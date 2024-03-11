@@ -13,6 +13,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Please enter your password"]
     },
+    otp: {
+        type: String,
+        required: false
+    },
     catogaries: {
         type: Array,
         default: ["WORK"]

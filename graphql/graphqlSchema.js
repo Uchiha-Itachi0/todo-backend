@@ -6,6 +6,7 @@ type RootQuery {
     me: outputUserData!
 }
 
+
 type outputUserData {
     _id: ID!
     name: String!
@@ -93,6 +94,10 @@ type outputDeleteProject {
     message: String!
 }
 
+type OTPType {
+    message: String!
+}
+
 type RootMutation {
     SignUp(userData: inputUserData): outputUserData!
     LogIn(userLoginData: inputUserLoginData): outputUserLoginData!
@@ -103,7 +108,9 @@ type RootMutation {
     completeTask(completeTaskInfo: inputCompleteTaskInfo): String!
     addCatogary(addCatogaryInfo: inputAddCatogaryInfo): outputAddCatogaryInfo!
     deleteCatogary(deleteCatogaryInfo: inputDeleteCatogaryInfo): outputDeleteProject!
+    sendOTP(email: String!): OTPType!
 }
+
 
 schema {
     query: RootQuery
